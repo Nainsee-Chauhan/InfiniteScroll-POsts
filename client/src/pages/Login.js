@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toast, useToaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -13,7 +13,6 @@ const Login = () => {
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  // const toaster = useToaster();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,8 +74,8 @@ const Login = () => {
         </div>
 
         {/* Form Section */}
-        <div className="mb-4 lg:ml-20 flex flex-col text-center  max-w-md p-5 bg-blue-950 rounded-md lg:w-1/2">
-          <h1 className=" text-5xl font-bold mb-6 text-white text-center">
+        <div className="flex flex-col items-center max-w-md p-5 ml-20 bg-blue-950 rounded-md w-full lg:w-1/2">
+          <h1 className="text-5xl font-bold mb-6 text-white text-center">
             Login
           </h1>
 
@@ -137,7 +136,7 @@ const Login = () => {
                 isTermsAccepted
                   ? "bg-blue-900 hover:bg-blue-800"
                   : "bg-gray-600 cursor-not-allowed"
-              } text-white py-3 px-6 rounded-md focus:outline-none w-full lg:w-auto`}
+              } text-white py-3 px-6 rounded-md focus:outline-none w-full`}
             >
               Login
             </button>

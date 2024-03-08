@@ -16,23 +16,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("phone", phone);
-      formData.append("address", address);
-      formData.append("profilePicture", profilePicture);
-
-      const res = await axios.post(`/api/v1/auth/register`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await axios.post(`/api/v1/auth/register`, {name, email, password, phone, address, profilePicture}, {
       });
 
       if (res && res.data.success) {
         toast.success(res.data && res.data.message);
-        navigate("/login");
+        navigate("/");
       } else {
         toast.error(res.data.message);
       }
@@ -51,12 +40,22 @@ const Register = () => {
       <div className="bg-blue-950 relative flex min-h-screen">
         <div className="hidden lg:flex justify-start lg:w-1/2 ">
           <img
-            className="object-cover w-full h-screen"
+            className="object-cover w-full h-full"
             src="images/img4.jpg"
             alt="img"
           />
+           <div className="absolute text-center top-60 left-40">
+            <h1 className="text-5xl mb-3 text-white text-center font-extrabold">
+                Welcome Back!
+            </h1>
+            <Link to="/register">
+              <button className="bg-white font-bold border lg:w-1/2 rounded-lg p-1 mt-2">
+                Login
+              </button>
+            </Link>
+          </div>
         </div>
-        <div className="ml-20 w-full max-w-lg p-6 rounded-md shadow-lg bg-blue-950">
+        <div className="ml-4 lg:ml-20 w-full max-w-md p-6 rounded-md shadow-lg bg-blue-950">
           <h1 className="text-4xl text-white font-bold mb-5 text-center">
             Create Account
           </h1>
@@ -74,7 +73,7 @@ const Register = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="border p-3 lg:w-2/3 ml-2 rounded-md focus:outline-none focus:border-blue-500"
+                  className="border p-3 lg:w-2/5 ml-2 rounded-xl focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -170,7 +169,7 @@ const Register = () => {
 
             <button
               type="submit"
-              className="bg-blue-900 text-white py-3 px-6 rounded-md hover:bg-blue-800 focus:outline-none"
+              className="bg-blue-900 lg:w-1/2 text-white py-3 px-6 rounded-md hover:bg-blue-800 focus:outline-none w-full"
             >
               Submit
             </button>
