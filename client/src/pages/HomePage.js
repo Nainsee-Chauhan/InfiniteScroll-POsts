@@ -1,61 +1,101 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Layout from "../components/Layout";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const pageSize = 10; // Number of posts to fetch per page
+  const loader = useRef(null);
 
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`https://dummyjson.com/posts?page=${page}`);
-      const data = await response.json();
-      setPosts((prevPosts) => [...prevPosts, ...data.posts]);
-      setPage((prevPage) => prevPage + 1);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/posts?page=${page}&pageSize=${pageSize}`
+        );
+        const newPosts = response.data;
+
+        // Fetch content for the new posts
+        const postsWithContent = await Promise.all(
+          newPosts.map(async (post) => {
+            const contentResponse = await axios.get(post.content);
+            const content = contentResponse.data;
+
+            return { ...post, content };
+          })
+        );
+
+        // Update the state with new posts and their content
+        setPosts((prevPosts) => [...prevPosts, ...postsWithContent]);
+      } catch (error) {
+        setError("Error fetching posts");
+      }
       setLoading(false);
+    };
+
+    fetchPosts();
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver);
+    if (loader.current) {
+      observer.observe(loader.current);
+    }
+
+    return () => {
+      if (loader.current) {
+        observer.unobserve(loader.current);
+      }
+    };
+  }, []);
+
+  const handleObserver = (entities) => {
+    const target = entities[0];
+    if (target.isIntersecting) {
+      setPage((prevPage) => prevPage + 1);
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop ===
-        document.documentElement.offsetHeight
-      ) {
-        fetchPosts();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    fetchPosts();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <Layout>
-      <div className="container mx-auto mt-8">
-        <h1 className="text-2xl font-semibold mb-4">Melody Verse</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {posts.map((post) => (
-            <div key={post.id} className="bg-white p-4 rounded-md shadow-md">
-              <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-              <p className="text-gray-700">{post.body}</p>
-            </div>
-          ))}
-        </div>
+      <div className="max-w-3xl mx-auto px-4  ">
+        <h2 className="text-3xl font-bold text-white mb-8">Post List</h2>
+        {posts.map((post, index) => (
+          <div
+            key={index}
+            className="bg-blue-950 shadow-md rounded-lg mb-6 p-6"
+          >
+            <h3 className="text-white text-2xl font-semibold mb-4">
+              {post.title}
+            </h3>
+            <img
+              className="object-cover w-full h-72 mb-4 rounded-md"
+              src={post.imageUrl}
+              alt={post.title}
+            />
+            <p className="text-white text-lg leading-relaxed mb-4">
+              {post.content.quote}
+            </p>
+            <p className="text-white">Author: {post.content.author}</p>
+            <p className="text-white mt-2">
+              Created At: {new Date(post.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+        ))}
         {loading && (
-          <p className="text-gray-500 text-center mt-4">Loading...</p>
+          <div className="flex items-center justify-center mt-8">
+            <div className="animate-spin rounded-full border-t-4 border-blue-500 border-t-blue-500 h-10 w-10 mr-2"></div>
+            <p className="text-gray-500 text-xl">Loading...</p>
+          </div>
         )}
+        {error && <p className="text-red-500 text-lg mt-8">{error}</p>}
+        <div ref={loader}></div>
       </div>
     </Layout>
   );

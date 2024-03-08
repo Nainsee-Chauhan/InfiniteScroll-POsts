@@ -9,7 +9,7 @@ const router = express.Router()
 //Register || method POST
 router.post('/register', registerController)
 
-//LOGIN || POST
+//LOGIN || POST 
 router.post('/login', loginController)
 
 //protected route for user

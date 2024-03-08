@@ -17,29 +17,18 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="container flex items-center justify-between">
+    <nav className="bg-blue-950 p-4">
+      <div className="container flex items-center justify-between ">
         {/* <div className="text-white text-2xl font-semibold">MelodyVerse</div> */}
         <div className="text-white">
-          <NavLink to="/home" className="hover:text-gray-300">
-            Posts
-          </NavLink>
+          <h1 className="text-2xl font-semibold mb-4">MelodyVerse</h1>
         </div>
         <ul className="flex space-x-4 ml-auto">
-          <li className="text-white">
-            <NavLink to="/home" className="hover:text-gray-300">
-              Home
-            </NavLink>
-          </li>
-          {/* <li className="text-white">
-            <NavLink to="/posts" className="hover:text-gray-300">Posts</NavLink>
-          </li>
-          <li className="text-white">
-            <NavLink to="/profile" className="hover:text-gray-300">Profile</NavLink>
-          </li> */}
-
-          {/* Add more navigation items as needed */}
-
+              <li className="text-white">
+                <NavLink to="/home" className="hover:text-gray-300">
+                  Home
+                </NavLink>
+              </li>
           {!auth.user ? (
             <>
               <li className="text-white">
@@ -56,7 +45,11 @@ const Navbar = () => {
           ) : (
             <>
               <li className="text-white">
-                <NavLink onClick={handleLogout} to="/" className="hover:text-gray-300">
+                <NavLink
+                  onClick={handleLogout}
+                  to="/"
+                  className="hover:text-gray-300"
+                >
                   Logout
                 </NavLink>
               </li>
